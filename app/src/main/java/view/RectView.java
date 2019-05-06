@@ -6,7 +6,13 @@ import model.Figure;
 
 public class RectView extends FigureView {
 
-    RectView(Figure f){}
+    private Figure f;
 
-    void draw(Canvas c){}
+    RectView(Figure f){
+        this.f=f;
+    }
+
+    void draw(Canvas c){
+
+    }
 }

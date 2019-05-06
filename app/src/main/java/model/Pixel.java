@@ -2,7 +2,7 @@ package model;
 
 public class Pixel extends Figure {
 
-    public static char LETTER;
+    public static char LETTER = 'P';
     private int x;
     private int y;
 

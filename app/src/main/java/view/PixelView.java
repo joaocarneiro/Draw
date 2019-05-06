@@ -6,7 +6,13 @@ import model.Figure;
 
 public class PixelView extends FigureView {
 
-    PixelView(Figure f){}
+    private Figure f;
 
-    void draw(Canvas c){}
+    PixelView(Figure f){
+        this.f=f;
+    }
+
+    void draw(Canvas c){
+
+    }
 }

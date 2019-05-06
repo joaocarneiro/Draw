@@ -6,7 +6,13 @@ import model.Figure;
 
 public class CircleView extends FigureView {
 
-    CircleView(Figure f){}
+    private Figure f;
 
-    void draw(Canvas c){}
+    CircleView(Figure f){
+        this.f=f;
+    }
+
+    void draw(Canvas c){
+
+    }
 }

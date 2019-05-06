@@ -3,6 +3,7 @@ package pt.isel.poo.li21n.g11.draw;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import model.Circle;
+import model.DrawModel;
+import model.Figure;
 import view.DrawView;
+import view.LineView;
 
 public class DrawController extends AppCompatActivity {
 
-    private int value = 0;
     private final String FILE = "src/main/res/draw.txt";
     private Button save;
     private Button load;
@@ -36,48 +40,19 @@ public class DrawController extends AppCompatActivity {
     private RadioButton rect;
     private RadioButton line;
     private RadioGroup radioGroup;
-    String mycontent;
-//    private DrawModel model;
+    private DrawModel model;
     private DrawView view;
 
     private void onReset(){
-        reset = new Button(this);
-        reset.setText("RESET");
-        reset.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){}
-        });
+
     }
 
     private void onLoad(){
-        load = new Button(this);
-        load.setText("LOAD");
-        load.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){}
-        });
+
     }
 
     private void onSave(){
-        save = new Button(this);
-        save.setText("SAVE");
-        save.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                BufferedWriter bw;
-                try {
-                    File targetFile = new File(FILE);
-                    FileWriter fw = new FileWriter(targetFile);
-                    bw = new BufferedWriter(fw);
-                    bw.write(mycontent);
-                    System.out.println(mycontent);
-                }
-                catch(IOException e){
-                    System.err.println(e);
-                }
 
-            }
-        });
     }
 
 //    public Figure createSelectedFigure(int x, int y){
@@ -89,9 +64,32 @@ public class DrawController extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
 
-        onReset();
-        onLoad();
-        onSave();
+        reset = new Button(this);
+        reset.setText("RESET");
+        reset.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                onReset();
+            }
+        });
+
+        load = new Button(this);
+        load.setText("LOAD");
+        load.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                onLoad();
+            }
+        });
+
+        save = new Button(this);
+        save.setText("SAVE");
+        save.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                onSave();
+            }
+        });
 
         final LinearLayout btnLayout = new LinearLayout(this);
         btnLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -115,7 +113,9 @@ public class DrawController extends AppCompatActivity {
         pixel.setText("Pixel");
         pixel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){}
+            public void onClick(View v){
+                Figure.newInstance('P');
+            }
         });
         circle = new RadioButton(this);
         circle.setText("Circle");
@@ -139,11 +139,17 @@ public class DrawController extends AppCompatActivity {
 
         final LinearLayout drawingBoard = new LinearLayout(this);
         drawingBoard.setOnTouchListener(new View.OnTouchListener() {
+            @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN){
-                    mycontent="("+event.getX()+"),("+event.getY()+")";
-                    Toast.makeText(DrawController.this, mycontent, Toast.LENGTH_LONG).show();
-                }
+                Toast.makeText(DrawController.this,event.getX()+","+event.getY()+"", Toast.LENGTH_LONG).show();
+                Figure.newInstance();
+                return true;
+            }
+        });
+        drawingBoard.setOnDragListener(new View.OnDragListener(){
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                Toast.makeText(DrawController.this,event.getX()+","+event.getY()+"", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

@@ -2,7 +2,7 @@ package model;
 
 public class Rect extends Line {
 
-    public static char LETTER;
+    public static char LETTER = 'R';
     private int x;
     private int y;
 

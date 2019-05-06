@@ -6,8 +6,14 @@ import model.Figure;
 
 public class LineView extends FigureView {
 
-    LineView(Figure f){}
+    private Figure f;
 
-    void draw(Canvas c){}
+    LineView(Figure f){
+        this.f=f;
+    }
+
+    void draw(Canvas c){
+
+    }
 
 }

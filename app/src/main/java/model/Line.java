@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Line extends Figure {
 
-    public static char LETTER;
+    public static char LETTER = 'L';
     private int x;
     private int y;
 

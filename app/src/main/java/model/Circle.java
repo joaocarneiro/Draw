@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Circle extends Figure{
 
-    public static char LETTER;
+    public static char LETTER = 'C';
     private int radius;
     private int x;
     private int y;
