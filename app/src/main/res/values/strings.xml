@@ -6,5 +6,5 @@
     <string name="line">Line</string>
     <string name="rect">Rect</string>
     <string name="pixel">Pixel</string>
-    <string name="circle">Circle</string>
+    <string name="circle">Pixel</string>
 </resources>

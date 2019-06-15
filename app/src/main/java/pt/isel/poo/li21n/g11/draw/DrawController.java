@@ -1,175 +1,160 @@
 package pt.isel.poo.li21n.g11.draw;
 
+import android.content.Context;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.DragEvent;
-import android.view.MotionEvent;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TableLayout;
-import android.widget.Toast;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
-import model.Circle;
-import model.DrawModel;
-import model.Figure;
-import view.DrawView;
-import view.LineView;
+import pt.isel.poo.li21n.g11.draw.model.Circle;
+import pt.isel.poo.li21n.g11.draw.model.DrawModel;
+import pt.isel.poo.li21n.g11.draw.model.Figure;
+import pt.isel.poo.li21n.g11.draw.model.Line;
+import pt.isel.poo.li21n.g11.draw.model.Pixel;
+import pt.isel.poo.li21n.g11.draw.model.Rect;
+import pt.isel.poo.li21n.g11.draw.view.DrawView;
 
 public class DrawController extends AppCompatActivity {
 
-    private final String FILE = "src/main/res/draw.txt";
-    private Button save;
-    private Button load;
-    private Button reset;
-    private RadioButton pixel;
-    private RadioButton circle;
-    private RadioButton rect;
-    private RadioButton line;
-    private RadioGroup radioGroup;
+    private final File FILE = new File("sketch.txt");
     private DrawModel model;
     private DrawView view;
-
-    private void onReset(){
-
-    }
-
-    private void onLoad(){
-
-    }
-
-    private void onSave(){
-
-    }
-
-//    public Figure createSelectedFigure(int x, int y){
-//
-//    }
+    private Button reset, load, save;
+    private RadioButton rect, line, pixel, circle;
+    private RadioGroup radioGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
+
+        model = new DrawModel();
+        view = new DrawView(this);
+
+        if (savedInstanceState != null)
+            onLoad();
 
         reset = new Button(this);
-        reset.setText("RESET");
-        reset.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                onReset();
-            }
-        });
+        reset.setText(getString(R.string.reset));
 
         load = new Button(this);
-        load.setText("LOAD");
-        load.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                onLoad();
-            }
-        });
+        load.setText(getString(R.string.load));
 
         save = new Button(this);
-        save.setText("SAVE");
-        save.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                onSave();
-            }
-        });
-
-        final LinearLayout btnLayout = new LinearLayout(this);
-        btnLayout.setOrientation(LinearLayout.HORIZONTAL);
-        btnLayout.addView(reset);
-        btnLayout.addView(save);
-        btnLayout.addView(load);
+        save.setText(getString(R.string.save));
 
         line = new RadioButton(this);
-        line.setText("Line");
-        line.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){}
-        });
+        line.setText(getString(R.string.line));
+
         rect = new RadioButton(this);
-        rect.setText("Rect");
-        rect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){}
-        });
+        rect.setText(getString(R.string.rect));
+
         pixel = new RadioButton(this);
-        pixel.setText("Pixel");
-        pixel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                Figure.newInstance('P');
-            }
-        });
+        pixel.setText(getString(R.string.pixel));
+
         circle = new RadioButton(this);
-        circle.setText("Circle");
-        circle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){}
-        });
+        circle.setText(getString(R.string.circle));
+
+        LinearLayout buttons = new LinearLayout(this);
+        buttons.setOrientation(LinearLayout.HORIZONTAL);
+        buttons.addView(reset);
+        buttons.addView(load);
+        buttons.addView(save);
 
         radioGroup = new RadioGroup(this);
         radioGroup.setOrientation(LinearLayout.HORIZONTAL);
+
         radioGroup.addView(line);
         radioGroup.addView(rect);
         radioGroup.addView(pixel);
         radioGroup.addView(circle);
+        radioGroup.check(line.getId());
 
-        final LinearLayout.LayoutParams layoutParams =
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                );
+        LinearLayout top = new LinearLayout(this);
+        top.addView(buttons);
+        top.setOrientation(LinearLayout.VERTICAL);
+        top.addView(radioGroup);
 
-        final LinearLayout drawingBoard = new LinearLayout(this);
-        drawingBoard.setOnTouchListener(new View.OnTouchListener() {
+        LinearLayout global = new LinearLayout(this);
+        global.setOrientation(LinearLayout.VERTICAL);
+        global.setBackgroundColor(Color.parseColor("#7FFCA4"));
+        top.setBackgroundColor(Color.WHITE);
+        global.addView(top);
+
+        global.addView(view);
+
+        reset.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Toast.makeText(DrawController.this,event.getX()+","+event.getY()+"", Toast.LENGTH_LONG).show();
-                Figure.newInstance();
-                return true;
+            public void onClick(View v) {
+                onReset();
             }
         });
-        drawingBoard.setOnDragListener(new View.OnDragListener(){
+        load.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onDrag(View v, DragEvent event) {
-                Toast.makeText(DrawController.this,event.getX()+","+event.getY()+"", Toast.LENGTH_SHORT).show();
-                return true;
+            public void onClick(View v) {
+                onLoad();
             }
         });
-        drawingBoard.setLayoutParams(layoutParams);
-        drawingBoard.setBackgroundColor(Color.parseColor("#7FFCA4"));
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSave();
+            }
+        });
 
-        final TableLayout tableLayout = new TableLayout(this);
-        tableLayout.setOrientation(LinearLayout.HORIZONTAL);
-        tableLayout.setLayoutParams(layoutParams);
-        tableLayout.addView(btnLayout);
-        tableLayout.addView(radioGroup);
-        tableLayout.addView(drawingBoard);
+        setContentView(global);
+    }
 
-        final LinearLayout layout = new LinearLayout(this);
-        layout.setLayoutParams(layoutParams);
-        layout.setOrientation(LinearLayout.HORIZONTAL);
-        layout.addView(tableLayout);
+    private void onSave() {
+        try {
+            OutputStream output = openFileOutput(FILE.getName(), Context.MODE_PRIVATE);
+            PrintWriter p = new PrintWriter(output);
+            model.save(p);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-        setContentView(layout);
+    private void onLoad() {
+        try {
+            InputStream input = openFileInput(FILE.getName());
+            Scanner in = new Scanner(input);
+            model.load(in);
+            view.reloadModel(model);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private void onReset() {
+        model.clear();
+        view.clear();
+    }
 
+    public Figure createSelectedFigure(int x, int y) {
+        Figure f = null;
+        if (line.isChecked()) f = new Line(x, y);
+        if (rect.isChecked()) f = new Rect(x, y);
+        if (circle.isChecked()) f = new Circle(x, y);
+        if (pixel.isChecked()) f = new Pixel(x, y);
+        model.add(f);
+        return f;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        onSave();
+        onLoad();
     }
 }
